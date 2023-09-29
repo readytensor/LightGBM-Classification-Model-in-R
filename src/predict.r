@@ -26,7 +26,7 @@ COLNAME_MAPPING <- file.path(MODEL_ARTIFACTS_PATH, "colname_mapping.csv")
 SCALING_FILE <- file.path(MODEL_ARTIFACTS_PATH, "scaler.rds")
 LABEL_ENCODER_FILE <- file.path(MODEL_ARTIFACTS_PATH, 'label_encoder.rds')
 ENCODED_TARGET_FILE <- file.path(MODEL_ARTIFACTS_PATH, "encoded_target.rds")
-REMOVED_COLUMNS_FILE <- file.path(MODEL_ARTIFACTS_PATH, "removed_columns_list.txt")
+REMOVED_COLUMNS_FILE <- file.path(MODEL_ARTIFACTS_PATH, "removed_column_names_list.txt")
 
 
 if (!dir.exists(PREDICTIONS_DIR)) {
@@ -99,7 +99,7 @@ if (length(categorical_features) > 0 && file.exists(OHE_ENCODER_FILE)) {
     df <- test_df_encoded[, !names(test_df_encoded) %in% extra_cols]
 }
 
-# After reading the test data and before starting with preprocessing
+# Remove columns that were removed during training
 if (file.exists(REMOVED_COLUMNS_FILE)) {
     removed_columns <- readLines(REMOVED_COLUMNS_FILE)
     df <- df[, !(colnames(df) %in% removed_columns)]
