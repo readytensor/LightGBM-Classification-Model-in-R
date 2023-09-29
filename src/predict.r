@@ -160,5 +160,8 @@ colnames(predictions_df) <- unique_classes
 predictions_df <- tibble(ids = ids) %>% bind_cols(predictions_df)
 colnames(predictions_df)[1] <- id_feature
 
+# avoid using scientific notation when writing the CSV file
+options(scipen = 999)
+
 write.csv(predictions_df, PREDICTIONS_FILE, row.names = FALSE)
 
