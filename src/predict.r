@@ -136,10 +136,12 @@ type <- ifelse(model_category == "binary_classification", "response", "probs")
 model <- lgb.load(PREDICTOR_FILE_PATH)
 df_matrix <- data.matrix(df)
 scores <- predict(model, df_matrix)
+# Round the scores to 5 decimals
+scores <- round(scores, 5)
 # Making predictions
 if (model_category == 'binary_classification') {
-    Prediction1 <- round(scores, 5)
-    Prediction2 <- round(1 - scores, 5)
+    Prediction1 <- scores
+    Prediction2 <- 1 - scores
     predictions_df <- data.frame(Prediction2 = Prediction2, Prediction1 = Prediction1)
     
 } else if (model_category == "multiclass_classification") {
