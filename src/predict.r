@@ -108,7 +108,6 @@ if (file.exists(REMOVED_COLUMNS_FILE)) {
     numeric_features <- setdiff(numeric_features, removed_columns)
 }
 
-
 # Standard Scaling
 scaling_values <- readRDS(SCALING_FILE) # Assuming you've saved scaling values during training
 for (feature in numeric_features) {
@@ -135,28 +134,22 @@ type <- ifelse(model_category == "binary_classification", "response", "probs")
 # Load the LightGBM model
 model <- lgb.load(PREDICTOR_FILE_PATH)
 df_matrix <- data.matrix(df)
-scores <- predict(model, df_matrix)
-# Round the scores to 5 decimals
-scores <- round(scores, 5)
+probs <- predict(model, df_matrix)
+# Round the probs to 5 decimals
+probs <- round(scores, 5)
 # Making predictions
+
 if (model_category == 'binary_classification') {
-    Prediction1 <- scores
-    Prediction2 <- 1 - scores
-    predictions_df <- data.frame(Prediction2 = Prediction2, Prediction1 = Prediction1)
-    
+    Prediction1 <- probs[, "0"]
+    Prediction2 <- probs[, "1"]
+    predictions_df <- data.frame(Prediction1 = Prediction1, Prediction2 = Prediction2)    
 } else if (model_category == "multiclass_classification") {
-    predictions_df <- as.data.frame(matrix(scores, ncol = length(unique(encoded_target)), byrow = TRUE))
-    colnames(predictions_df) <- sort(target_classes) # Assuming target_classes contains the original class names
+    predictions_df <- as.data.frame(probs)
+    colnames(predictions_df) <- encoder  
 }
-
-# Getting the original labels
 encoder <- readRDS(LABEL_ENCODER_FILE)
-target <- readRDS(ENCODED_TARGET_FILE)
-class_names <- encoder[target + 1]
-unique_classes <- unique(class_names)
-unique_classes <- sort(unique_classes)
 
-colnames(predictions_df) <- unique_classes
+colnames(predictions_df) <- encoder
 predictions_df <- tibble(ids = ids) %>% bind_cols(predictions_df)
 colnames(predictions_df)[1] <- id_feature
 
@@ -164,4 +157,5 @@ colnames(predictions_df)[1] <- id_feature
 options(scipen = 999)
 
 write.csv(predictions_df, PREDICTIONS_FILE, row.names = FALSE)
+
 
