@@ -138,8 +138,8 @@ df_matrix <- data.matrix(df)
 scores <- predict(model, df_matrix)
 # Making predictions
 if (model_category == 'binary_classification') {
-    Prediction1 <- scores
-    Prediction2 <- 1 - scores
+    Prediction1 <- round(scores, 5)
+    Prediction2 <- round(1 - scores, 5)
     predictions_df <- data.frame(Prediction2 = Prediction2, Prediction1 = Prediction1)
     
 } else if (model_category == "multiclass_classification") {
