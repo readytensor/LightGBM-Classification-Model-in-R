@@ -190,7 +190,6 @@ encoded_target <- as.integer(factor(target, levels = levels_target)) - 1
 saveRDS(levels_target, LABEL_ENCODER_FILE)
 saveRDS(encoded_target, ENCODED_TARGET_FILE)
 
-
 # Prepare the data for LightGBM
 df_matrix <- data.matrix(df)
 train_data <- lgb.Dataset(data = df_matrix, label = encoded_target)
