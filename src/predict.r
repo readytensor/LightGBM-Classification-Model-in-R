@@ -140,29 +140,22 @@ probs <- predict(model, df_matrix)
 # Round the probs to 5 decimals
 probs <- round(probs, 5)
 
+encoder <- readRDS(LABEL_ENCODER_FILE)
+
 if (model_category == 'binary_classification') {
     Prediction1 <- probs
     Prediction2 <- 1 - probs
     predictions_df <- data.frame(Prediction2 = Prediction2, Prediction1 = Prediction1)
     
-} else if (model_category == "multiclass_classification") {
-    encoder <- readRDS(LABEL_ENCODER_FILE)
+} else if (model_category == "multiclass_classification") {    
     predictions_df <- as.data.frame(
         matrix(probs, 
         ncol = length(encoder), 
         byrow = TRUE)
     )
-    colnames(predictions_df) <- sort(target_classes) # Assuming target_classes contains the original class names
 }
 
-# Getting the original labels
-encoder <- readRDS(LABEL_ENCODER_FILE)
-target <- readRDS(ENCODED_TARGET_FILE)
-class_names <- encoder[target + 1]
-unique_classes <- unique(class_names)
-unique_classes <- sort(unique_classes)
-
-colnames(predictions_df) <- unique_classes
+colnames(predictions_df) <- encoder
 predictions_df <- tibble(ids = ids) %>% bind_cols(predictions_df)
 colnames(predictions_df)[1] <- id_feature
 
