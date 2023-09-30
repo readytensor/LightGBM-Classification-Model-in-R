@@ -228,7 +228,7 @@ if (model_category == 'binary_classification'){
 num_rounds <- 250
 
 # Train the LightGBM classifier
-model <- lgb.train(params, train_data, num_rounds)
+model <- lgb.train(params, train_data, num_rounds, verbose = -1)
 
 # Save the model using lgb.save
 lgb.save(model, PREDICTOR_FILE_PATH)
