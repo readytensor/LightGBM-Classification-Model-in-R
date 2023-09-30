@@ -134,17 +134,24 @@ type <- ifelse(model_category == "binary_classification", "response", "probs")
 # Load the LightGBM model
 model <- lgb.load(PREDICTOR_FILE_PATH)
 df_matrix <- data.matrix(df)
+
+# Making predictions
 probs <- predict(model, df_matrix)
 # Round the probs to 5 decimals
 probs <- round(probs, 5)
-# Making predictions
+
 if (model_category == 'binary_classification') {
     Prediction1 <- probs
     Prediction2 <- 1 - probs
     predictions_df <- data.frame(Prediction2 = Prediction2, Prediction1 = Prediction1)
     
 } else if (model_category == "multiclass_classification") {
-    predictions_df <- as.data.frame(matrix(probs, ncol = length(unique(encoded_target)), byrow = TRUE))
+    encoder <- readRDS(LABEL_ENCODER_FILE)
+    predictions_df <- as.data.frame(
+        matrix(probs, 
+        ncol = length(encoder), 
+        byrow = TRUE)
+    )
     colnames(predictions_df) <- sort(target_classes) # Assuming target_classes contains the original class names
 }
 
